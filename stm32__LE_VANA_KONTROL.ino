@@ -34,8 +34,16 @@
  * 
  * https://github.com/zulns/STM32F1_RTC
  */
+ #include <stm32f1_rtc.h>
+ int rtc_saniye = 20; //saat ayarlamak için değişkenler
+int saat = 20; //saat ayarlamak için değişkenler
+int dakika = 46;
+int gun = 23;
+int h_gun = 0; //haftanın gunu ,0 pazartesi, 1 sali...
+int ay = 10;
+unsigned int yil = 2018;
+int saat_ayarlaniyor_flag=0;//şuanda kullanıcı saat ayarla menüsüne girmişmi
 
-#include <stm32f1_rtc.h>
 
 #define ALARM_ACTIVE_CYCLE 30
 
@@ -87,6 +95,7 @@ STM32F1_RTC rtc;
 
 void setup() {
   Serial.begin(115200);
+  lcd_menu_manager_setup();
   rtc.begin();
   isHijriMode = IS_HIJRI_MODE(rtc);
   isHour12 = IS_HOUR_12(rtc);
@@ -102,7 +111,7 @@ void setup() {
 }
 
 void loop() {
-  
+  lcd_menu_manager_loop();
   char chr;
   int16_t ival;
   uint8_t len;
@@ -255,6 +264,14 @@ void printTime() {
 }
 
 void printTime(bool ms) {
+  if(saat_ayarlaniyor_flag==0){
+  saat  =  time.hours;
+  dakika = time.minutes;
+  rtc_saniye =time.seconds;
+  gun = date.day;
+  ay = date.month;
+  yil = date.year;
+  }
   uint8_t h = time.hours;
   if (isHour12) {
     h %= 12;
